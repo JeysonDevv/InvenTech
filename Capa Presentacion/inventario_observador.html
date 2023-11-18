@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de equipos</title>
+    <link rel="icon" type="image/x-icon" href="/img/inventech2.png">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="inventario_observador.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="img/inventech1.png" alt="Logo de Tu Aplicación">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <button id="btnCerrarSesion" class="btn btn-danger">Cerrar Sesión</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-3">
+        <div class="modal fade" id="modalAltaEdicion" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-light">
+                        <h5 class="modal-title" id="exampleModalLabel">Agregar / Editar</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form id="equipoForm" onsubmit="return validarFormulario()">
+                        <div class="modal-body">
+                            <input id="id" type="hidden"> <!-- ID que vamos a recibir de firebase -->
+                            <div class="row">
+                                <!-- Primera columna -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label style="font-weight: bold;">Código</label>
+                                        <input id="codigo" type="text" class="form-control" maxlength="8" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label style="font-weight: bold;">Procesador</label>
+                                        <select id="procesador" class="form-control" required>
+                                            <option value="Intel(R) Xeon(R) CPU E3-1220 v3 @ 3.10GHz">Intel(R) Xeon(R)
+                                                CPU E3-1220 v3 @ 3.10GHz</option>
+                                            <option value="Intel Core i5-2400 CPU @ 3.10GHz">Intel Core i5-2400 CPU @
+                                                3.10GHz</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label style="font-weight: bold;">Memoria RAM (GB)</label>
+                                        <input id="memoria" type="number" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label style="font-weight: bold;">Almacenamiento (GB)</label>
+                                        <input id="almacenamiento" type="number" class="form-control" required>
+                                    </div>
+                                </div>
+                                <!-- Segunda columna -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label style="font-weight: bold;">Sistema Operativo</label>
+                                        <select id="sistema_operativo" class="form-control" required>
+                                            <option value="Windows XP">Windows XP</option>
+                                            <option value="Windows Vista">Windows Vista</option>
+                                            <option value="Windows 7">Windows 7</option>
+                                            <option value="Windows 8">Windows 8</option>
+                                            <option value="Windows 8.1">Windows 8.1</option>
+                                            <option value="Windows 10">Windows 10</option>
+                                            <option value="Windows 11">Windows 11</option>
+                                            <option value="Windows Multipoint Server 2012 Premium">Windows
+                                                Multipoint Server 2012 Premium</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label style="font-weight: bold;">Actualizaciones</label>
+                                        <select id="actualizacion" class="form-control" required>
+                                            <option value="Actualizado">Actualizado</option>
+                                            <option value="No actualizado">No actualizado</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label style="font-weight: bold;">Dirección IP</label>
+                                        <input type="text" class="form-control" id="red" name="ipv4"
+                                            placeholder="xxx.xxx.xxx.xxx" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label style="font-weight: bold;">Usuarios</label>
+                                        <input type="number" id="usuarios" class="form-control" rows="3"
+                                            required></input>
+                                    </div>
+                                </div>
+                                <!-- Tercera columna -->
+                                <div class="col-md-4">
+                                    <label style="font-weight: bold;">Software Instalado</label>
+                                    <div class="form-group" id="software" style="max-height: 100px; overflow-y: auto;">
+                                        <div>
+                                            <input type="checkbox" value="Microsoft Office">
+                                            <label>Microsoft Office</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" value="Google Chrome">
+                                            <label>Google Chrome</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" value="Visual Studio Code">
+                                            <label>Visual Studio Code</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" value="Adobe Creative Cloud">
+                                            <label>Adobe Creative Cloud</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" value="Git">
+                                            <label>Git</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" value="BlueStacks">
+                                            <label>BlueStacks</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" value="StarUML">
+                                            <label>StarUML</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" value="Filmora">
+                                            <label>Filmora</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" value="GeoGebra">
+                                            <label>GeoGebra</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" value="FoxitReader">
+                                            <label>FoxitReader</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="chkOtros" value="Otros">
+                                            <label>Otros</label>
+                                        </div>
+                                        <div id="otrosSoftwareContainer" style="display: none;">
+                                            <textarea id="otrosSoftware" class="form-control" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <label style="font-weight: bold;">Políticas de seguridad</label>
+                                    <div class="form-group" id="politicas" style="max-height: 100px; overflow-y: auto;">
+                                        <div>
+                                            <input type="checkbox" value="Ninguna">
+                                            <label>Ninguna</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" value="Contraseñas seguras">
+                                            <label>Contraseñas seguras</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" value="Control de acceso a datos estrictos">
+                                            <label>Control de acceso a datos estrictos</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" value="Copias de seguridad">
+                                            <label>Copias de seguridad</label>
+                                        </div>
+
+                                        <div>
+                                            <input type="checkbox" value="Protección de correo electrónico">
+                                            <label>Protección de correo electrónico</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="chkOtros2" value="Otros2">
+                                            <label>Otros</label>
+                                        </div>
+                                        <div id="otrosPoliticasContainer" style="display: none;">
+                                            <textarea id="otrosPoliticas" class="form-control" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <label style="font-weight: bold;">Hallazgos</label>
+                                    <div class="form-group" id="monitor" style="max-height: 100px; overflow-y: auto;">
+                                        <div>
+                                            <input type="checkbox" value="Ninguno">
+                                            <label>Ninguno</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" value="Monitor dañado">
+                                            <label>Monitor dañado</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" value="Terminal sin caja">
+                                            <label>Terminal sin caja</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" value="Terminal sin uso">
+                                            <label>Terminal sin uso</label>
+                                        </div>
+
+                                        <div>
+                                            <input type="checkbox" value="UPS insuficiente">
+                                            <label>Protección de correo electrónico</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" value="Cableado en desorden">
+                                            <label>Cableado en desorden</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" value="Etiqueta faltante">
+                                            <label>Etiqueta faltante</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="chkOtros3" value="Otros3">
+                                            <label>Otros</label>
+                                        </div>
+                                        <div id="otrosHallazgosContainer" style="display: none;">
+                                            <textarea id="otrosHallazgos" class="form-control" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                tabindex="2">Cancelar</button>
+                            <button type="submit" value="btnGuardar" class="btn btn-primary"
+                                translate="1">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!--Modal2-->
+        <div class="modal fade" id="modalAltaEdicion2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-light">
+                        <h5 class="modal-title" id="exampleModalLabel">Agregar / Editar</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form id="filaForm">
+                        <div class="modal-body">
+                            <input id="id" type="hidden"> <!-- ID que vamos a recibir de firebase -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Hallazgo</label>
+                                        <input id="hallazgo" type="text" class="form-control" maxlength="20" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Descripcion</label>
+                                        <textarea id="descripcion" class="form-control" rows="4" maxlength="800"
+                                            required></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Total presupuesto (C$)</label>
+                                        <input id="total" type="number" class="form-control texto-largo" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Recursos necesarios</label>
+                                        <textarea id="recursos" class="form-control texto-largo" rows="4"
+                                            maxlength="400" required></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                tabindex="2">Cancelar</button>
+                            <button type="submit" value="btnGuardar" class="btn btn-primary"
+                                translate="1">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <ul class="nav nav-tabs" id="myTabs">
+            <li class="nav-item">
+                <a class="nav-link active" id="tab1" data-toggle="tab" href="#table1">Gestión de equipos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="tab2" data-toggle="tab" href="#table2">Descripción de hallazgos</a>
+            </li>
+        </ul>
+
+        <div class="tab-content mt-2">
+            <div class="tab-pane fade show active" id="table1">
+                <!-- Contenido de la primera tabla -->
+                <table id="example" class="table table-striped display" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>CODIGO TERMINAL</th>
+                            <th>PROCESADOR</th>
+                            <th>MEMORIA RAM(GB)</th>
+                            <th>ALMACENAMIENTO(GB)</th>
+                            <th>SISTEMA OPERATIVO</th>
+                            <th>ACTUALIZACIONES</th>
+                            <th>USUARIOS</th>
+                            <th>DIRECCIÓN IP</th>
+                            <th>HALLAZGO</th>
+                            <th>POLÍTICAS DE SEGURIDAD</th>
+                            <th>SOFTWARE INSTALADO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"> <!-- Añade un id para el cuerpo de la tabla -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="tab-pane fade" id="table2">
+                <!-- Contenido de la segunda tabla -->
+
+                <table id="second-table" class="table table-striped display" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>HALLAZGO</th>
+                            <th>DESCRIPCIÓN</th>
+                            <th>RECURSOS NECESARIOS</th>
+                            <th>TOTAL PRESUPUESTO (C$)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="second-table-body"> <!-- Agrega un ID al cuerpo de la segunda tabla -->
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+
+    <!-- Popper.js (required for Bootstrap) -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+    <!-- DataTables and DataTables Responsive JS -->
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap4.min.js"></script>
+    <script src="//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"></script>
+
+    <!-- DataTables Buttons JS -->
+
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.6/firebase.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9.14.2/dist/sweetalert2.all.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.5/jquery.inputmask.min.js"></script>
+
+    <script type="module" src="/Capa Negocio/inventario_observador.js"></script>
+</body>
+
+</html>

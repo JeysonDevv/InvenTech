@@ -1,0 +1,89 @@
+#example td {
+  font-size: 14px; /* Puedes ajustar el tamaño de la fuente según tus preferencias */
+}
+table thead {
+  background-color: #3893ef;
+}
+
+table tfoot {
+  background-color: #3893ef;
+}
+
+.navbar-brand img {
+  max-width: 100px;
+  /* Ajusta el valor según el tamaño deseado */
+  height: auto;
+  /* Esto mantiene la proporción de la imagen */
+}
+
+.fila-roja {
+  background-color: red !important;
+  color: white;
+  /* Cambia el color del texto si es necesario para la legibilidad */
+}
+
+/* Agrega estilos CSS personalizados para la paginación */
+#example_paginate {
+  text-align: center;
+}
+
+/* Ajusta el estilo de los botones de paginación */
+#example_paginate .paginate_button {
+  display: inline-block;
+  padding: 0.5em 0.75em;
+  margin: 0.125em;
+  cursor: pointer;
+  border-radius: 0.25em;
+  text-align: center;
+}
+
+/* Ajusta el estilo del botón de página actual */
+#example_paginate .paginate_button.current {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Asegura que los elementos de paginación se ajusten al contenedor */
+@media (max-width: 767px) {
+  #example_paginate {
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  #example_paginate .paginate_button {
+    margin: 0.125em;
+  }
+}
+
+/* Agrega estilos CSS personalizados para la paginación */
+#second-table_paginate {
+  text-align: center;
+}
+
+/* Ajusta el estilo de los botones de paginación */
+#second-table_paginate .paginate_button {
+  display: inline-block;
+  padding: 0.5em 0.75em;
+  margin: 0.125em;
+  cursor: pointer;
+  border-radius: 0.25em;
+  text-align: center;
+}
+
+/* Ajusta el estilo del botón de página actual */
+#second-table_paginate .paginate_button.current {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Asegura que los elementos de paginación se ajusten al contenedor */
+@media (max-width: 767px) {
+  #second-table_paginate {
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  #second-table_paginate .paginate_button {
+    margin: 0.125em;
+  }
+}
