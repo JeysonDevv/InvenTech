@@ -547,7 +547,7 @@ $(document).on("click", ".btn-editar", function () {
 // Agregar un evento al formulario dentro del modal para guardar los datos
 document
   .getElementById("equipoForm")
-  .addEventListener("submit", function (event) {
+  .addEventListener("submit", async function (event) {
     event.preventDefault(); // Evita que se recargue la página
 
     // Validar el formulario
@@ -559,6 +559,16 @@ document
     // Captura los valores del formulario
     const id = document.getElementById("id").value; // Obtén el ID del registro a editar
     const codigo = document.getElementById("codigo").value;
+
+    // Realiza una verificación si el código ya existe en la base de datos, excluyendo el registro actual
+    const exists = await checkIfCodeExists(codigo, id);
+
+    if (exists) {
+        // Muestra un mensaje de alerta si el código ya existe
+        alert("¡El código ya existe en la base de datos!");
+        return;
+    }
+
     const procesador = document.getElementById("procesador").value;
     const memoria = document.getElementById("memoria").value;
     const almacenamiento = document.getElementById("almacenamiento").value;
@@ -625,6 +635,20 @@ document
     // Cierra el modal
     $("#modalAltaEdicion").modal("hide");
   });
+
+// Función para verificar si el código ya existe en la base de datos excluyendo el registro actual
+async function checkIfCodeExists(codigo, currentRecordId) {
+  // Obtén una referencia a la base de datos
+  const database = firebase.database();
+  // Obtén una referencia a la tabla "equipos"
+  const equiposRef = database.ref("/equipos");
+
+  // Realiza una consulta para verificar si el código ya existe, excluyendo el registro actual
+  const snapshot = await equiposRef.orderByChild("codigo").equalTo(codigo).once("value");
+
+  // Si el código ya existe y no es el mismo que el registro actual, devuelve true
+  return snapshot.exists() && Object.keys(snapshot.val())[0] !== currentRecordId;
+}
 
 //TABLA 2
 
